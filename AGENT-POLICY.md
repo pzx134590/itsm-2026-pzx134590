@@ -1,0 +1,3 @@
+- web_search: forbidden because the service must be validated only against the local repository and checker output, keeping the blast radius limited to the lab project.
+- bash: forbidden because shell execution is not needed for a narrow rule-checked implementation and could mutate unrelated files outside the repository.
+- github_issue: forbidden because the task is local-only and issue creation would broaden the operational scope beyond the lab environment.
