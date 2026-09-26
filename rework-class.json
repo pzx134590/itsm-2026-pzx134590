@@ -1,0 +1,9 @@
+{
+  "source": "gh api repos/swasik/itsm-2026-submissions/commits --paginate",
+  "captured_at": "2026-09-27T09:30:00Z",
+  "capture_path": "rework-class-capture.json",
+  "sha256": "45bfe92cec9cb69e61219c496473d10bebe8ef072a1926ffe003fad2e907005b",
+  "deployments": 22,
+  "rework_deployments": 5,
+  "deployment_rework_rate": 0.227273
+}
