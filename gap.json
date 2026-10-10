@@ -1,0 +1,11 @@
+{
+  "_comment": "Stretch 2: client and server p99 values measured through the declared downstream latency toxic.",
+  "toxic": {
+    "type": "latency",
+    "latency": 100,
+    "jitter": 10
+  },
+  "client_p99_seconds": 0.2875,
+  "server_p99_seconds": 0.1769,
+  "gap_seconds": 0.1106
+}

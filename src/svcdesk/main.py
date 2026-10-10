@@ -1,24 +1,60 @@
-# ai-generated: 85% - Implemented in FastAPI and manually verified against the Lab 1 SLA and state-machine rules.
+# ai-generated: 100% - AI added the Lab 3 knowledge search endpoint and request histogram.
 
+import json
 import os
+import time as monotonic_time
 from datetime import date, datetime, time, timedelta, timezone
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Any, Optional
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
+from urllib.request import urlopen
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 from fastapi import FastAPI, Header, Query, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
+from prometheus_client import CONTENT_TYPE_LATEST, CollectorRegistry, Histogram, generate_latest
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 app = FastAPI()
 
 tickets: dict[str, dict[str, Any]] = {}
+metrics_registry = CollectorRegistry()
+request_duration = Histogram(
+    "http_server_request_duration_seconds",
+    "Duration of HTTP requests handled by svcdesk.",
+    ("http_request_method", "http_route", "http_response_status_code"),
+    buckets=(0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.16, 0.17, 0.18, 0.19, 0.2, 0.21, 0.25, 0.5, 1, 2.5, 5, 10),
+    registry=metrics_registry,
+)
 WARSAW = ZoneInfo("Europe/Warsaw")
 DECISION_C1 = "business"
 DECISION_C2 = "reopen"
 DECISION_C3 = "matrix"
+
+
+@app.middleware("http")
+async def observe_request(request: Request, call_next):
+    if request.url.path == "/metrics":
+        return await call_next(request)
+
+    started = monotonic_time.perf_counter()
+    try:
+        response = await call_next(request)
+    except Exception:
+        route = request.scope.get("route")
+        route_template = getattr(route, "path", "unmatched")
+        request_duration.labels(request.method, route_template, "500").observe(monotonic_time.perf_counter() - started)
+        raise
+
+    route = request.scope.get("route")
+    route_template = getattr(route, "path", "unmatched")
+    request_duration.labels(request.method, route_template, str(response.status_code)).observe(
+        monotonic_time.perf_counter() - started
+    )
+    return response
 
 
 def error_response(status: int, code: str, message: str):
@@ -608,6 +644,27 @@ def compute_metrics_for_events(events: list[dict[str, Any]], window_from: dateti
 @app.get("/health")
 def health():
     return {"status": "ok", "service": "svcdesk"}
+
+
+@app.get("/metrics")
+def metrics():
+    return Response(content=generate_latest(metrics_registry), headers={"Content-Type": CONTENT_TYPE_LATEST})
+
+
+@app.get("/kb/search")
+def kb_search(q: str = Query(..., min_length=1, max_length=200)):
+    index_url = os.getenv("KB_INDEX_URL", "http://kb-index:8080").rstrip("/")
+    search_url = f"{index_url}/search?{urlencode({'q': q})}"
+    try:
+        with urlopen(search_url, timeout=5.0) as upstream:
+            if upstream.status != 200:
+                return error_response(502, "upstream_unavailable", "knowledge index unavailable")
+            payload = json.loads(upstream.read().decode("utf-8"))
+        return {"query": q, "hits": payload["hits"]}
+    except HTTPError:
+        return error_response(502, "upstream_unavailable", "knowledge index unavailable")
+    except (URLError, TimeoutError, OSError, UnicodeDecodeError, json.JSONDecodeError, KeyError, TypeError):
+        return error_response(502, "upstream_unavailable", "knowledge index unavailable")
 
 
 @app.post("/dora/metrics")
