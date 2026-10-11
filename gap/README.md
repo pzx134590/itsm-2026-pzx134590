@@ -1,4 +1,4 @@
-<!-- ai-generated: 100% - AI drafted the latency-gap explanation; measured values will be added after the proxy run -->
+<!-- ai-generated: 100% - AI drafted the latency-gap explanation; measured values from the proxy run are included below -->
 
 # Client-server latency gap
 

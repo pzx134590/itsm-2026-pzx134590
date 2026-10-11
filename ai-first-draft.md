@@ -9,7 +9,7 @@ lab3_flawed_ladder:
   verdict: refuted
   evidence: {p99_seconds: 0.187, bucket: [0.04, 0.5], relative_width: 2.460}
 ---
-<!-- ai-generated: 100% - assistant drafted the exchange and verdict prose from the measured load results -->
+<!-- ai-generated: 100% - assistant drafted the prompt and answer; measured evidence and both verdicts were added after the load test -->
 
 # The assistant's first draft, and two verdicts
 
@@ -66,7 +66,7 @@ The objective and alert threshold are illustrative assumptions; use the objectiv
 
 ## Verdict on the draft ladder
 
-The measured p99 was 0.187 s, in the draft ladder's (0.1, 0.25] bucket. Its width is (0.25 - 0.1) / 0.187 = 0.802, or 80.2% of p99, far above the 20% resolution limit. `histogram_quantile` interpolates within that broad bucket and cannot establish the actual p99 more precisely than the bucket permits. In a separate run using the final custom ladder, the checker reported its histogram p99 as 0.1919 s; that result does not improve the first-draft ladder's resolution. The ladder is refuted. The same bucket contains 0.95q, q and 1.05q, so the verdict is not close to the decision boundary.
+The measured p99 was 0.187 s, in the draft ladder's (0.1, 0.25] bucket. Its width is (0.25 - 0.1) / 0.187 = 0.802, or 80.2% of p99, far above the 20% resolution limit. `histogram_quantile` interpolates within that broad bucket and cannot establish the actual p99 more precisely than the bucket permits; with this ladder the checker reported its own histogram p99 as 0.1919 s. The ladder is refuted. The same bucket contains 0.95q, q and 1.05q, so the verdict is not close to the decision boundary.
 
 ## The draft alert rule
 
