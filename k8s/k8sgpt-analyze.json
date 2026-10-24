@@ -1,0 +1,43 @@
+{
+  "provider": "",
+  "errors": null,
+  "status": "ProblemDetected",
+  "problems": 2,
+  "results": [
+    {
+      "kind": "Deployment",
+      "name": "lab4-k8sgpt-sim/lab4-intentionally-broken",
+      "error": [
+        {
+          "Text": "Deployment lab4-k8sgpt-sim/lab4-intentionally-broken has 1 replicas but 0 are available with status running",
+          "KubernetesDoc": "",
+          "Sensitive": [
+            {
+              "Unmasked": "lab4-k8sgpt-sim",
+              "Masked": "I2Y+dkVKVkY6bnlXay0p"
+            },
+            {
+              "Unmasked": "lab4-intentionally-broken",
+              "Masked": "Y2w2bmIzL3wjR0Jea3l0PXFFSnRMTT9dcg=="
+            }
+          ]
+        }
+      ],
+      "details": "",
+      "parentObject": ""
+    },
+    {
+      "kind": "Pod",
+      "name": "lab4-k8sgpt-sim/lab4-intentionally-broken-646658f4d8-c4x6c",
+      "error": [
+        {
+          "Text": "failed to pull and unpack image \"invalid.invalid/lab4/broken:0.1\": failed to resolve reference \"invalid.invalid/lab4/broken:0.1\": failed to do request: Head \"https://invalid.invalid/v2/lab4/broken/manifests/0.1\": dial tcp: lookup invalid.invalid on 192.168.65.254:53: no such host",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "",
+      "parentObject": "Deployment/lab4-intentionally-broken"
+    }
+  ]
+}

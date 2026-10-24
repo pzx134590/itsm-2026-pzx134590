@@ -1,0 +1,40 @@
+{
+  "investigator": {
+    "agent": "independent read-only RCA investigator",
+    "model": "Copilot SDK subagent; exact backing model not exposed",
+    "mcp_server": "not used; read-only Prometheus HTTP API",
+    "transcript": "ai-rca/transcript-2.md"
+  },
+  "hypotheses": [
+    {
+      "id": "H1",
+      "hypothesis": "the checkout-page period brought a user-visible HTTP 500 burst",
+      "component": "frontend",
+      "predicts": "(sum(increase(http_server_request_duration_seconds_count{service_name=\"frontend\",http_response_status_code=\"500\"}[2m])) or vector(0)) > 0",
+      "at": "2026-10-12T07:09:19Z",
+      "result": true,
+      "verdict": "partially_correct",
+      "evidence": "The comparison was false at the five-minute pre-onset baseline (07:00:45Z) and true at the page time, with 16 frontend HTTP 500 responses in the two-minute window. The metric has no http_route label, so it cannot establish that all these errors were checkout requests."
+    },
+    {
+      "id": "H2",
+      "hypothesis": "ProductCatalog errors explain the checkout failures",
+      "component": "product-catalog",
+      "predicts": "(sum(increase(rpc_server_call_duration_seconds_count{service_name=\"product-catalog\",rpc_method=\"oteldemo.ProductCatalogService/GetProduct\",rpc_response_status_code=\"INTERNAL\"}[2m])) or vector(0)) > 0",
+      "at": "2026-10-12T07:09:19Z",
+      "result": true,
+      "verdict": "partially_correct",
+      "evidence": "The comparison was false at 07:00:45Z and true at 07:09:19Z, with 12 ProductCatalog INTERNAL responses in the two-minute window. It establishes a ProductCatalog server error symptom, not that those errors caused all checkout or frontend failures; the corresponding checkout client counter did not increase in the same short windows."
+    },
+    {
+      "id": "H3",
+      "hypothesis": "payment failure or service latency drove the incident",
+      "component": "payment",
+      "predicts": "(sum(increase(rpc_client_call_duration_seconds_count{service_name=\"checkout\",rpc_method=\"oteldemo.PaymentService/Charge\",rpc_response_status_code!=\"OK\"}[2m])) or vector(0)) > 0",
+      "at": "2026-10-12T07:09:19Z",
+      "result": false,
+      "verdict": "hallucinated",
+      "evidence": "The failed PaymentService/Charge comparison was false at both the baseline and page time. Payment-call p95 was 4.75 ms at both comparison points, and the checked checkout and ProductCatalog p95 values did not rise. The available metrics do not support payment failure or anomalous service latency as the explanation."
+    }
+  ]
+}
