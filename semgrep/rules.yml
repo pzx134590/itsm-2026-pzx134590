@@ -1,0 +1,20 @@
+# ai-generated: 100% - Copilot wrote service-specific review rules and their tests.
+rules:
+  - id: svcdesk-test-clock-in-request
+    languages: [python]
+    severity: WARNING
+    message: Request code reads SVCDESK_TEST_CLOCK; keep the test clock disabled in production.
+    patterns:
+      - pattern: os.getenv("SVCDESK_TEST_CLOCK", ...)
+      - pattern-inside: |
+          def $HANDLER(..., x_test_clock, ...):
+              ...
+  - id: svcdesk-kb-search-urlopen
+    languages: [python]
+    severity: WARNING
+    message: KB search opens a configured URL; restrict KB_INDEX_URL and review redirect handling.
+    patterns:
+      - pattern: urlopen(...)
+      - pattern-inside: |
+          def kb_search(...):
+              ...
