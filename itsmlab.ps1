@@ -29,5 +29,23 @@ if ($env:ITSMLAB_IMAGE) { $image = $env:ITSMLAB_IMAGE }
 if (-not $image) { $image = $defaultImage }
 
 $here = (Get-Location).Path
-& docker run --rm -v "${here}:/work" -w /work -v /var/run/docker.sock:/var/run/docker.sock $image @args
+$gitArgs = @()
+if (Test-Path -LiteralPath ".git" -PathType Leaf) {
+    $gitDir = & git rev-parse --absolute-git-dir
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    $commonDir = & git rev-parse --path-format=absolute --git-common-dir
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    $gitDir = [System.IO.Path]::GetFullPath($gitDir)
+    $commonDir = [System.IO.Path]::GetFullPath($commonDir).TrimEnd('\', '/')
+    $prefix = $commonDir + [System.IO.Path]::DirectorySeparatorChar
+    if (-not $gitDir.StartsWith($prefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+        [Console]::Error.WriteLine("itsmlab.ps1: the worktree Git directory is outside its common Git directory.")
+        exit 2
+    }
+    $relativeGitDir = $gitDir.Substring($prefix.Length).Replace('\', '/')
+    $gitArgs = @('-v', "${commonDir}:/git-common", '-e', "GIT_DIR=/git-common/$relativeGitDir", '-e', 'GIT_WORK_TREE=/work')
+}
+# GITHUB_TOKEN and GH_TOKEN reach the checker when they are set (a bare -e passes a variable only if it exists):
+# Lab 5 reads your runs and attestations from the GitHub API, which allows 60 anonymous calls an hour.
+& docker run --rm -e GITHUB_TOKEN -e GH_TOKEN -v "${here}:/work" -w /work -v /var/run/docker.sock:/var/run/docker.sock @gitArgs $image @args
 exit $LASTEXITCODE
