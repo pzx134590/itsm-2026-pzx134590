@@ -39,6 +39,8 @@ review agent was instructed not to consult the labels, this was not the
 required blind measurement and the result is included only as an experiment,
 subject to the lecturer's decision. The review was performed by a Copilot
 SDK general-purpose agent; its underlying model identifier was not exposed.
+The experimental SARIF was also receipted on issue 363, but the course
+confirmed that receipt 358 remains the one graded and issue 363 is not graded.
 
 I would retain Trivy's dependency gate and the gitleaks secret gate, while
 using Semgrep as a reviewed report rather than a blocking gate. The zero false
