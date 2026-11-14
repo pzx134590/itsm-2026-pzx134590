@@ -32,6 +32,14 @@ positives and 5 missed: precision 0.6667, recall 0.4444 and F1 0.5333. Trivy
 found 4, with no false positives and 5 missed: precision 1.0000, recall 0.4444
 and F1 0.6154.
 
+The additional AI reviewer reported 6 defects, with no false positives and 3
+missed: precision 1.0000, recall 0.6667 and F1 0.8000. This review was run
+after the course revealed the labels on SARIF receipt 358. Although the
+review agent was instructed not to consult the labels, this was not the
+required blind measurement and the result is included only as an experiment,
+subject to the lecturer's decision. The review was performed by a Copilot
+SDK general-purpose agent; its underlying model identifier was not exposed.
+
 I would retain Trivy's dependency gate and the gitleaks secret gate, while
 using Semgrep as a reviewed report rather than a blocking gate. The zero false
 positives for Trivy and gitleaks on this small set make their alerts useful,
