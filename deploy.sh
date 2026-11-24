@@ -125,8 +125,18 @@ if [[ $(yq -r '.lab6_deploy.shadow != null' "$CONFIG_FILE") == true ]]; then
   [[ $SHADOW_MIN_REQUESTS =~ ^[0-9]+$ ]] || die "$CONFIG_FILE: shadow.min_requests must be an integer"
   (( SHADOW_MIN_REQUESTS > 120 )) || die "$CONFIG_FILE: shadow.min_requests must exceed the hang ceiling of 120 requests"
 fi
-mapfile -t STEP_WEIGHTS < <(yq '.lab6_deploy.steps[].weight' "$CONFIG_FILE")
-mapfile -t step_durations < <(yq '.lab6_deploy.steps[].min_duration' "$CONFIG_FILE")
+case $RELEASE_STRATEGY in
+  canary)
+    mapfile -t STEP_WEIGHTS < <(yq '.lab6_deploy.steps[].weight' "$CONFIG_FILE")
+    mapfile -t step_durations < <(yq '.lab6_deploy.steps[].min_duration' "$CONFIG_FILE")
+    ;;
+  flag)
+    [[ $(cfg flag.name) == svcdesk-2-1 ]] || die "unsupported flag name"
+    mapfile -t STEP_WEIGHTS < <(yq '.lab6_deploy.flag.steps[].percent' "$CONFIG_FILE")
+    mapfile -t step_durations < <(yq '.lab6_deploy.flag.steps[].min_duration' "$CONFIG_FILE")
+    ;;
+  *) die "unknown release strategy: $RELEASE_STRATEGY" ;;
+esac
 (( ${#STEP_WEIGHTS[@]} > 0 )) || die "$CONFIG_FILE: lab6_deploy.steps is empty (R-10)"
 STEP_MIN_S=()                              # STEP_WEIGHTS[i] per cent for at least STEP_MIN_S[i] seconds
 for d in "${step_durations[@]}"; do
@@ -206,6 +216,31 @@ set_weights() {
   got=$(get_weights) || { log "set_weights $*: could not read the weights back"; return 1; }
   [[ $got == "$*" ]] || { log "set_weights $*: Caddy runs '$got'"; return 1; }
   log "weights now $*"
+}
+
+set_flag_percent() {
+  local p=$1 f value expected
+  [[ $p =~ ^[0-9]+$ ]] && (( p <= 100 )) || { log "invalid flag percentage: $p"; return 1; }
+  f=$(mktemp) || return 1
+  jq -n --argjson p "$p" '{flags: {"svcdesk-2-1": {state: "ENABLED", variants: {on: true, off: false},
+    defaultVariant: "off", targeting: {fractional: [["on", $p], ["off", (100 - $p)]]}}}}' >"$f"
+  chmod 644 "$f"
+  if ! docker compose cp "$f" flagd:/etc/flagd/flags.json; then
+    rm -f "$f"
+    log "failed to update flagd"
+    return 1
+  fi
+  rm -f "$f"
+  sleep 2
+  if (( p == 0 || p == 100 )); then
+    expected=false
+    (( p == 100 )) && expected=true
+    value=$(stack_curl -fsS --max-time 3 -H 'Content-Type: application/json' \
+      -d '{"context":{"targetingKey":"release-verification"}}' \
+      http://flagd:8016/ofrep/v1/evaluate/flags/svcdesk-2-1 | jq -r '.value') || return 1
+    [[ $value == "$expected" ]] || { log "flagd returned $value, expected $expected"; return 1; }
+  fi
+  log "flag svcdesk-2-1 set to $p%"
 }
 
 # start_canary <image>: put an image into svcdesk-canary, the one command R-14 allows for it. Only svcdesk-canary is
@@ -298,6 +333,24 @@ record_action() {
 # record_body: the prose below the front matter, read by the lecturer (R-27). Write yours: it is the same reasoning
 # for every run, and you may add what this run saw (the variables of the script are in scope).
 record_body() {
+  if [[ $RELEASE_STRATEGY == flag ]]; then
+    cat <<'EOF'
+# Change record
+
+## Why this change type
+
+This is a standard change only within the documented, pre-authorised feature-flag procedure. The candidate starts
+dark and is exposed in configured stages, with Prometheus observations and automatic rollback. A new service,
+changed SLO or untested procedure needs normal change assessment instead.
+
+## Risk and what bounds it
+
+The flag starts off, then enables candidate behaviour for 10% and 50% of searches. The gate reads only the on
+variant and requires the configured observation minimum before passing; a stopped counter is treated as a hang.
+Rollback disables the flag and restores stable routing. The runner independently measures the actual blast radius.
+EOF
+    return
+  fi
   cat <<'EOF'
 # Change record
 
@@ -385,7 +438,7 @@ on_exit() {
   local rc=$?
   if (( RECORD_WRITTEN == 0 )); then
     log "exited with status $rc before finish: no record, no outcome (R-15, R-23)"
-    if (( CANARY_STARTED == 1 )) && [[ $RELEASE_STRATEGY == canary ]]; then
+    if (( CANARY_STARTED == 1 )); then
       trap - EXIT
       set +e
       if set_weights 100 0 0; then
@@ -420,6 +473,9 @@ PROGRESS_TIMEOUT_S=$(calc "$INTERVAL_S * 2")
 if check "$PROGRESS_TIMEOUT_S < 10"; then PROGRESS_TIMEOUT_S=10; fi
 
 BASE_SELECTOR='job="svcdesk", track="canary", http_route="/kb/search"'
+if [[ $RELEASE_STRATEGY == flag ]]; then
+  BASE_SELECTOR+=', feature_flag_variant="on"'
+fi
 TOTAL_QUERY="sum(http_server_request_duration_seconds_count{$BASE_SELECTOR}) or vector(0)"
 ERROR_QUERY="sum(http_server_request_duration_seconds_count{$BASE_SELECTOR, http_response_status_code=~\"5..\"}) or vector(0)"
 GOOD_QUERY="sum(http_server_request_duration_seconds_bucket{$BASE_SELECTOR, le=\"$LATENCY_THRESHOLD_S\"}) or vector(0)"
@@ -438,6 +494,10 @@ read_gate_point() {
 rollback() {
   local reason=$1 recovery
   log "gate decision: roll back - $reason"
+  if [[ $RELEASE_STRATEGY == flag ]]; then
+    set_flag_percent 0 || die "could not disable feature flag after: $reason"
+    record_action closed-loop "set feature flag to 0 percent to roll back"
+  fi
   set_weights 100 0 0 || die "could not restore stable-only weights after: $reason"
   record_action closed-loop "release automation owns rollback and set weights 100/0/0: $reason"
   if recovery=$(stack_curl -fsS --max-time 2 http://svcdesk-stable:8080/health 2>&1); then
@@ -454,13 +514,17 @@ if ! set_weights 100 0 0; then
 fi
 record_action closed-loop "set weights 100/0/0 before candidate startup"
 
+if [[ $RELEASE_STRATEGY == flag ]]; then
+  set_flag_percent 0 || die "could not disable flag before candidate startup"
+  record_action closed-loop "set feature flag to 0 percent before candidate startup"
+fi
 CANARY_STARTED=1
 if ! start_canary "$CANDIDATE"; then
   rollback "candidate failed to start or answer health checks"
 fi
 record_action closed-loop "start svcdesk-canary with the candidate at weight 0"
 
-if [[ $SHADOW_ENABLED == true ]]; then
+if [[ $SHADOW_ENABLED == true && $RELEASE_STRATEGY == canary ]]; then
   if read_gate_point; then
     :
   else
@@ -573,6 +637,11 @@ if [[ $SHADOW_ENABLED == true ]]; then
   log "shadow gate passed; starting the weighted canary with users still routed to stable"
 fi
 
+if [[ $RELEASE_STRATEGY == flag ]]; then
+  set_weights 0 100 0 || rollback "could not route traffic to the dark candidate"
+  record_action closed-loop "route traffic to candidate with feature flag disabled"
+fi
+
 for step_index in "${!STEP_WEIGHTS[@]}"; do
   weight=${STEP_WEIGHTS[$step_index]}
   stable_weight=$(( 100 - weight ))
@@ -588,10 +657,13 @@ for step_index in "${!STEP_WEIGHTS[@]}"; do
   STEP_BASE_ERRORS=$POINT_ERRORS
   STEP_BASE_GOOD=$POINT_GOOD
 
-  if ! set_weights "$stable_weight" "$weight" 0; then
-    rollback "could not apply canary weights $stable_weight/$weight"
+  if [[ $RELEASE_STRATEGY == flag ]]; then
+    set_flag_percent "$weight" || rollback "could not apply feature flag percentage $weight"
+    record_action closed-loop "set feature flag to $weight percent"
+  else
+    set_weights "$stable_weight" "$weight" 0 || rollback "could not apply canary weights $stable_weight/$weight"
+    record_action closed-loop "set weights $stable_weight/$weight/0 for step $(( step_index + 1 ))"
   fi
-  record_action closed-loop "set weights $stable_weight/$weight/0 for step $(( step_index + 1 ))"
   STEP_STARTED_S=$(now_s)
   LAST_PROGRESS_S=$STEP_STARTED_S
   PREVIOUS_TOTAL=$STEP_BASE_TOTAL
@@ -666,8 +738,11 @@ for step_index in "${!STEP_WEIGHTS[@]}"; do
   done
 done
 
-if ! set_weights 0 100 0; then
-  rollback "candidate passed the gate but promotion routing failed"
+if [[ $RELEASE_STRATEGY == flag ]]; then
+  set_flag_percent 100 || rollback "could not enable feature flag for promotion"
+  record_action closed-loop "set feature flag to 100 percent to promote the candidate"
+else
+  set_weights 0 100 0 || rollback "candidate passed the gate but promotion routing failed"
+  record_action closed-loop "set weights 0/100/0 to promote the candidate"
 fi
-record_action closed-loop "set weights 0/100/0 to promote the candidate"
 finish promoted "all configured canary steps passed their SLO-derived gates"

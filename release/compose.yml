@@ -23,10 +23,13 @@ name: svcdesk-release
 x-svcdesk: &svcdesk
   environment:
     KB_INDEX_URL: http://kb-index:8080
+    SVCDESK_V2_FLAGS_URL: http://flagd:8016
     # Accepted Lab 3 ladder; includes the 0.1 s latency objective.
     SVCDESK_BUCKETS: "0.005,0.01,0.025,0.05,0.075,0.1,0.16,0.17,0.18,0.19,0.20,0.21,0.25,0.5,1,2.5,5,10"
   depends_on:
     kb-index:
+      condition: service_started
+    flagd:
       condition: service_started
   restart: unless-stopped
 
@@ -61,6 +64,13 @@ services:
       - source: prometheus
         target: /etc/prometheus/prometheus.yml
 
+  flagd:
+    image: ghcr.io/open-feature/flagd:v0.17.0
+    command: ["start", "--uri", "file:/etc/flagd/flags.json"]
+    configs:
+      - source: flags
+        target: /etc/flagd/flags.json
+
   shadow:
     image: nginx:1.30.5-alpine
     configs:
@@ -68,6 +78,18 @@ services:
         target: /etc/nginx/nginx.conf
 
 configs:
+  flags:
+    content: |
+      {
+        "flags": {
+          "svcdesk-2-1": {
+            "state": "ENABLED",
+            "variants": {"on": true, "off": false},
+            "defaultVariant": "off",
+            "targeting": {"fractional": [["on", 100], ["off", 0]]}
+          }
+        }
+      }
   # Caddy's configuration at start. deploy.sh replaces it at run time through the admin API (POST /load); the
   # deploy.sh loads this same text with other weights. Keep `admin 0.0.0.0:2019`: without it the admin API listens on
   # the container's own localhost only. Never `weighted_round_robin 0 0` (R-06). A `$` in this block is written `$$`

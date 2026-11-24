@@ -1,0 +1,41 @@
+# ai-generated: 100% - AI adapted the course Prometheus analysis to the configured gate thresholds
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: svcdesk-slo
+spec:
+  args:
+    - name: canary-hash
+  metrics:
+    - name: availability
+      initialDelay: 20s
+      interval: 5s
+      failureLimit: 0
+      successCondition: len(result) == 1 && !isNaN(result[0]) && result[0] <= 0.20
+      provider:
+        prometheus:
+          address: http://prometheus.monitoring.svc:9090
+          query: |
+            (sum(rate(http_server_request_duration_seconds_count{job="svcdesk", rollouts_pod_template_hash="{{args.canary-hash}}", http_route="/kb/search", http_response_status_code=~"5.."}[30s])) or vector(0))
+            / sum(rate(http_server_request_duration_seconds_count{job="svcdesk", rollouts_pod_template_hash="{{args.canary-hash}}", http_route="/kb/search"}[30s]))
+    - name: latency
+      initialDelay: 20s
+      interval: 5s
+      failureLimit: 0
+      successCondition: len(result) == 1 && !isNaN(result[0]) && result[0] <= 0.20
+      provider:
+        prometheus:
+          address: http://prometheus.monitoring.svc:9090
+          query: |
+            1 - sum(rate(http_server_request_duration_seconds_bucket{job="svcdesk", rollouts_pod_template_hash="{{args.canary-hash}}", http_route="/kb/search", le="0.1"}[30s]))
+              / sum(rate(http_server_request_duration_seconds_count{job="svcdesk", rollouts_pod_template_hash="{{args.canary-hash}}", http_route="/kb/search"}[30s]))
+    - name: throughput
+      initialDelay: 20s
+      interval: 5s
+      failureLimit: 0
+      successCondition: len(result) == 1 && !isNaN(result[0]) && result[0] >= 0.5
+      provider:
+        prometheus:
+          address: http://prometheus.monitoring.svc:9090
+          query: |
+            min(sum by (pod) (irate(http_server_request_duration_seconds_count{job="svcdesk", rollouts_pod_template_hash="{{args.canary-hash}}", http_route="/kb/search"}[15s])))

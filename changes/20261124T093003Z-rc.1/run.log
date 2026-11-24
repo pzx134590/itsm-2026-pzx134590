@@ -1,0 +1,49 @@
+09:30:04 candidate itsmlab.local/lab6-candidate:3199915bc315, stable ghcr.io/swasik/svcdesk-v2-seeded:2.0.0, strategy flag
+09:30:04 config: SLO window 28d; availability 0.99 (max burn 20); latency 0.95 under 0.1s (max burn 4); min_requests 150; interval 5s; timeout 160s; steps 10 50 % for 45 20 s
+09:30:04 shadow: nginx, at least 200 ingress searches and completed candidate observations before weighted traffic; hangs use the progress watchdog
+09:30:04 Prometheus http://prometheus:9090; Caddy admin http://edge:2019
+09:30:04 weights now 100 0 0
+09:30:04 action [closed-loop] set weights 100/0/0 before candidate startup
+ itsmlab6-0c9a453f-flagd-1 Copying /tmp/tmp.uyMMWMas0t to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+ itsmlab6-0c9a453f-flagd-1 Copied /tmp/tmp.uyMMWMas0t to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+09:30:06 flag svcdesk-2-1 set to 0%
+09:30:06 action [closed-loop] set feature flag to 0 percent before candidate startup
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Recreate 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Recreated 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Starting 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Started 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Waiting 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Healthy 
+09:30:08 svcdesk-canary runs itsmlab.local/lab6-candidate:3199915bc315
+09:30:08 action [closed-loop] start svcdesk-canary with the candidate at weight 0
+09:30:08 weights now 0 100 0
+09:30:08 action [closed-loop] route traffic to candidate with feature flag disabled
+ itsmlab6-0c9a453f-flagd-1 Copying /tmp/tmp.GMbRGcQIJV to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+ itsmlab6-0c9a453f-flagd-1 Copied /tmp/tmp.GMbRGcQIJV to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+09:30:10 flag svcdesk-2-1 set to 10%
+09:30:10 action [closed-loop] set feature flag to 10 percent
+09:30:10 step 1: weight 10%, minimum 45s and 150 requests
+09:30:10 action [read-only] read canary counters at weight 10%
+09:30:10 step 1 weight 10%: requests=0 5xx=0 (0, limit 0.2) slow=0 (0, limit 0.2), target_up=1
+09:30:15 action [read-only] read canary counters at weight 10%
+09:30:15 step 1 weight 10%: requests=1 5xx=0 (0, limit 0.2) slow=0 (0, limit 0.2), target_up=1
+09:30:21 action [read-only] read canary counters at weight 10%
+09:30:21 step 1 weight 10%: requests=19 5xx=0 (0, limit 0.2) slow=1 (0.05263157895, limit 0.2), target_up=1
+09:30:26 action [read-only] read canary counters at weight 10%
+09:30:26 step 1 weight 10%: requests=37 5xx=0 (0, limit 0.2) slow=2 (0.05405405405, limit 0.2), target_up=1
+09:30:31 action [read-only] read canary counters at weight 10%
+09:30:31 step 1 weight 10%: requests=40 5xx=0 (0, limit 0.2) slow=2 (0.05, limit 0.2), target_up=1
+09:30:36 action [read-only] read canary counters at weight 10%
+09:30:36 step 1 weight 10%: requests=40 5xx=0 (0, limit 0.2) slow=2 (0.05, limit 0.2), target_up=1
+09:30:41 action [read-only] read canary counters at weight 10%
+09:30:41 step 1 weight 10%: requests=40 5xx=0 (0, limit 0.2) slow=2 (0.05, limit 0.2), target_up=1
+09:30:41 gate decision: roll back - canary produced no completed search for 10s at weight 10%; treating absent observations as a hang
+ itsmlab6-0c9a453f-flagd-1 Copying /tmp/tmp.DqcuOm4EAE to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+ itsmlab6-0c9a453f-flagd-1 Copied /tmp/tmp.DqcuOm4EAE to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+09:30:44 flag svcdesk-2-1 set to 0%
+09:30:44 action [closed-loop] set feature flag to 0 percent to roll back
+09:30:44 weights now 100 0 0
+09:30:44 action [closed-loop] release automation owns rollback and set weights 100/0/0: canary produced no completed search for 10s at weight 10%; treating absent observations as a hang
+09:30:44 action [read-only] recovery evidence: stable health endpoint answered successfully after rollback
+09:30:44 record: /tmp/itsmlab6-zenbinwa/run-1-rc.1/record/CHANGE.md
+09:30:44 outcome: rolled-back - canary produced no completed search for 10s at weight 10%; treating absent observations as a hang (41 s)

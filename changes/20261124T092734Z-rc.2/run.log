@@ -1,0 +1,68 @@
+09:27:35 candidate itsmlab.local/lab6-candidate:43902aef9de9, stable ghcr.io/swasik/svcdesk-v2-seeded:2.0.0, strategy flag
+09:27:35 config: SLO window 28d; availability 0.99 (max burn 20); latency 0.95 under 0.1s (max burn 4); min_requests 150; interval 5s; timeout 160s; steps 10 50 % for 45 20 s
+09:27:35 shadow: nginx, at least 200 ingress searches and completed candidate observations before weighted traffic; hangs use the progress watchdog
+09:27:35 Prometheus http://prometheus:9090; Caddy admin http://edge:2019
+09:27:35 weights now 100 0 0
+09:27:35 action [closed-loop] set weights 100/0/0 before candidate startup
+ itsmlab6-0c9a453f-flagd-1 Copying /tmp/tmp.xl6i86UgBm to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+ itsmlab6-0c9a453f-flagd-1 Copied /tmp/tmp.xl6i86UgBm to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+09:27:37 flag svcdesk-2-1 set to 0%
+09:27:37 action [closed-loop] set feature flag to 0 percent before candidate startup
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Recreate 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Recreated 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Starting 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Started 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Waiting 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Healthy 
+09:27:38 svcdesk-canary runs itsmlab.local/lab6-candidate:43902aef9de9
+09:27:38 action [closed-loop] start svcdesk-canary with the candidate at weight 0
+09:27:38 weights now 0 100 0
+09:27:38 action [closed-loop] route traffic to candidate with feature flag disabled
+ itsmlab6-0c9a453f-flagd-1 Copying /tmp/tmp.WuS9DDanPN to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+ itsmlab6-0c9a453f-flagd-1 Copied /tmp/tmp.WuS9DDanPN to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+09:27:40 flag svcdesk-2-1 set to 10%
+09:27:40 action [closed-loop] set feature flag to 10 percent
+09:27:40 step 1: weight 10%, minimum 45s and 150 requests
+09:27:41 action [read-only] read canary counters at weight 10%
+09:27:41 step 1 weight 10%: requests=0 5xx=0 (0, limit 0.2) slow=0 (0, limit 0.2), target_up=1
+09:27:46 action [read-only] read canary counters at weight 10%
+09:27:46 step 1 weight 10%: requests=5 5xx=0 (0, limit 0.2) slow=0 (0, limit 0.2), target_up=1
+09:27:51 action [read-only] read canary counters at weight 10%
+09:27:51 step 1 weight 10%: requests=32 5xx=0 (0, limit 0.2) slow=0 (0, limit 0.2), target_up=1
+09:27:56 action [read-only] read canary counters at weight 10%
+09:27:56 step 1 weight 10%: requests=47 5xx=0 (0, limit 0.2) slow=1 (0.02127659574, limit 0.2), target_up=1
+09:28:01 action [read-only] read canary counters at weight 10%
+09:28:01 step 1 weight 10%: requests=56 5xx=0 (0, limit 0.2) slow=2 (0.03571428571, limit 0.2), target_up=1
+09:28:07 action [read-only] read canary counters at weight 10%
+09:28:07 step 1 weight 10%: requests=73 5xx=0 (0, limit 0.2) slow=3 (0.04109589041, limit 0.2), target_up=1
+09:28:12 action [read-only] read canary counters at weight 10%
+09:28:12 step 1 weight 10%: requests=90 5xx=0 (0, limit 0.2) slow=3 (0.03333333333, limit 0.2), target_up=1
+09:28:17 action [read-only] read canary counters at weight 10%
+09:28:17 step 1 weight 10%: requests=113 5xx=0 (0, limit 0.2) slow=3 (0.02654867257, limit 0.2), target_up=1
+09:28:22 action [read-only] read canary counters at weight 10%
+09:28:22 step 1 weight 10%: requests=133 5xx=0 (0, limit 0.2) slow=3 (0.02255639098, limit 0.2), target_up=1
+09:28:27 action [read-only] read canary counters at weight 10%
+09:28:27 step 1 weight 10%: requests=155 5xx=1 (0.006451612903, limit 0.2) slow=4 (0.02580645161, limit 0.2), target_up=1
+09:28:27 step 1 passed with 155 canary searches
+ itsmlab6-0c9a453f-flagd-1 Copying /tmp/tmp.SKyT5PU01X to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+ itsmlab6-0c9a453f-flagd-1 Copied /tmp/tmp.SKyT5PU01X to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+09:28:30 flag svcdesk-2-1 set to 50%
+09:28:30 action [closed-loop] set feature flag to 50 percent
+09:28:30 step 2: weight 50%, minimum 20s and 150 requests
+09:28:30 action [read-only] read canary counters at weight 50%
+09:28:30 step 2 weight 50%: requests=22 5xx=0 (0, limit 0.2) slow=1 (0.04545454545, limit 0.2), target_up=1
+09:28:35 action [read-only] read canary counters at weight 50%
+09:28:35 step 2 weight 50%: requests=77 5xx=0 (0, limit 0.2) slow=3 (0.03896103896, limit 0.2), target_up=1
+09:28:40 action [read-only] read canary counters at weight 50%
+09:28:40 step 2 weight 50%: requests=182 5xx=0 (0, limit 0.2) slow=3 (0.01648351648, limit 0.2), target_up=1
+09:28:45 action [read-only] read canary counters at weight 50%
+09:28:45 step 2 weight 50%: requests=289 5xx=0 (0, limit 0.2) slow=7 (0.02422145329, limit 0.2), target_up=1
+09:28:51 action [read-only] read canary counters at weight 50%
+09:28:51 step 2 weight 50%: requests=403 5xx=0 (0, limit 0.2) slow=9 (0.0223325062, limit 0.2), target_up=1
+09:28:51 step 2 passed with 403 canary searches
+ itsmlab6-0c9a453f-flagd-1 Copying /tmp/tmp.lbSVWnUGiH to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+ itsmlab6-0c9a453f-flagd-1 Copied /tmp/tmp.lbSVWnUGiH to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+09:28:53 flag svcdesk-2-1 set to 100%
+09:28:53 action [closed-loop] set feature flag to 100 percent to promote the candidate
+09:28:53 record: /tmp/itsmlab6-vkfl_bez/run-1-rc.2/record/CHANGE.md
+09:28:53 outcome: promoted - all configured canary steps passed their SLO-derived gates (79 s)

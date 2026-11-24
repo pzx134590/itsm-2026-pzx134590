@@ -32,6 +32,12 @@ not proof of health: after ingress has continued, ten seconds without completed 
 rollback. This catches the hang, whose unfinished searches never increment its histogram. A genuine outage
 in monitoring can therefore cause a safe rollback rather than an unsubstantiated promotion.
 
+For the optional flag strategy, the candidate first serves traffic with `svcdesk-2-1` off, then the flag
+ramps through 10% and 50%; only the `on` variant enters the gate. The same 20% SLI limits and no-progress
+watchdog apply. In the saved practice flag runs the honest candidate was promoted with radius 0, and the
+hang was rolled back with radius 91. Unlike shadow, this variant exposes a small portion of user traffic
+to the candidate, so the 150 Core/flag ceiling rather than the shadow ceiling of 5 applies.
+
 ## Blast radius
 
 The table gives the most recent saved practice run for each slot, from the runner's user-observed records.

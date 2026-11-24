@@ -1,0 +1,43 @@
+# ai-generated: 100% - AI adapted the course rollout recipe to the accepted Lab 3 SLO
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: svcdesk
+spec:
+  replicas: 10
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels: {app: svcdesk}
+  template:
+    metadata:
+      labels: {app: svcdesk}
+    spec:
+      containers:
+        - name: svcdesk
+          image: ghcr.io/swasik/svcdesk-v2-seeded:2.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - {name: http, containerPort: 8080}
+          env:
+            - {name: KB_INDEX_URL, value: "http://kb-index:8080"}
+            - {name: SVCDESK_BUCKETS, value: "0.005,0.01,0.025,0.05,0.075,0.1,0.16,0.17,0.18,0.19,0.20,0.21,0.25,0.5,1,2.5,5,10"}
+          readinessProbe:
+            httpGet: {path: /health, port: http}
+          lifecycle:
+            preStop:
+              sleep: {seconds: 5}
+  strategy:
+    canary:
+      analysis:
+        templates:
+          - templateName: svcdesk-slo
+        startingStep: 1
+        args:
+          - name: canary-hash
+            valueFrom:
+              podTemplateHashValue: Latest
+      steps:
+        - setWeight: 10
+        - pause: {duration: 45s}
+        - setWeight: 50
+        - pause: {duration: 20s}

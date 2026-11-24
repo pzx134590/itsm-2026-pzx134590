@@ -14,4 +14,8 @@ lab6_deploy:
     - {weight: 50, min_duration: 20s}
   timeout: 160s
   shadow: {tool: nginx, min_requests: 200}
-  flag: null
+  flag:
+    name: svcdesk-2-1
+    steps:
+      - {percent: 10, min_duration: 45s}
+      - {percent: 50, min_duration: 20s}
