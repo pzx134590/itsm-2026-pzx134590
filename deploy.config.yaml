@@ -1,0 +1,17 @@
+# ai-generated: 100% - AI populated the official configuration template from the accepted Lab 3 SLO
+lab6_deploy:
+  slo:
+    window: 28d
+    availability: {objective: 0.99}
+    latency: {objective: 0.95, threshold_seconds: 0.1}
+  gate:
+    availability: {max_burn_rate: 20}
+    latency: {max_burn_rate: 4}
+    min_requests: 150
+    interval: 5s
+  steps:
+    - {weight: 10, min_duration: 45s}
+    - {weight: 50, min_duration: 20s}
+  timeout: 160s
+  shadow: {tool: nginx, min_requests: 200}
+  flag: null
