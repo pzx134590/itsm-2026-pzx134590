@@ -568,6 +568,8 @@ if [[ $SHADOW_ENABLED == true ]]; then
     rollback "could not disable nginx shadow after the candidate passed shadow validation"
   fi
   record_action closed-loop "disable nginx shadow after $shadow_requests candidate searches passed"
+  # Let in-flight mirrored searches finish and reach a scrape before taking the first step baseline.
+  sleep 10
   log "shadow gate passed; starting the weighted canary with users still routed to stable"
 fi
 

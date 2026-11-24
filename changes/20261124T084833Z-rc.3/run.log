@@ -1,0 +1,31 @@
+08:48:34 candidate itsmlab.local/lab6-candidate:3d711e0253ef, stable ghcr.io/swasik/svcdesk-v2-seeded:2.0.0, strategy canary
+08:48:34 config: SLO window 28d; availability 0.99 (max burn 20); latency 0.95 under 0.1s (max burn 4); min_requests 150; interval 5s; timeout 160s; steps 10 50 % for 45 20 s
+08:48:34 shadow: nginx, at least 200 ingress searches and completed candidate observations before weighted traffic; hangs use the progress watchdog
+08:48:34 Prometheus http://prometheus:9090; Caddy admin http://edge:2019
+08:48:34 weights now 100 0 0
+08:48:34 action [closed-loop] set weights 100/0/0 before candidate startup
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Recreate 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Recreated 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Starting 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Started 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Waiting 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Healthy 
+08:48:36 svcdesk-canary runs itsmlab.local/lab6-candidate:3d711e0253ef
+08:48:36 action [closed-loop] start svcdesk-canary with the candidate at weight 0
+08:48:36 weights now 0 0 100
+08:48:36 action [closed-loop] enable nginx shadow at weights 0/0/100; users continue to receive stable responses
+08:48:36 shadow phase: nginx mirrors candidate searches; requiring 200 stable ingress searches and completed candidate observations before user canary
+08:48:36 action [read-only] read candidate shadow counters from Prometheus
+08:48:37 shadow: stable ingress=0/200 candidate completed=0/200 5xx=0 slow=0; users remain on stable
+08:48:42 action [read-only] read candidate shadow counters from Prometheus
+08:48:42 shadow: stable ingress=201/200 candidate completed=7/200 5xx=0 slow=0; users remain on stable
+08:48:47 action [read-only] read candidate shadow counters from Prometheus
+08:48:47 shadow: stable ingress=400/200 candidate completed=185/200 5xx=0 slow=66; users remain on stable
+08:48:52 action [read-only] read candidate shadow counters from Prometheus
+08:48:52 shadow: stable ingress=600/200 candidate completed=371/200 5xx=0 slow=155; users remain on stable
+08:48:56 shadow result: 579 completed searches, availability bad share 0 (limit 0.2), latency bad share 0.4421416235 (limit 0.2)
+08:48:56 gate decision: roll back - shadow latency: 256 of 579 candidate searches exceeded 0.1s against a 0.2 bad-share limit
+08:48:56 weights now 100 0 0
+08:48:56 action [closed-loop] set weights 100/0/0 to roll back: shadow latency: 256 of 579 candidate searches exceeded 0.1s against a 0.2 bad-share limit
+08:48:56 record: /tmp/itsmlab6-ndyh197w/run-1-rc.3/record/CHANGE.md
+08:48:56 outcome: rolled-back - shadow latency: 256 of 579 candidate searches exceeded 0.1s against a 0.2 bad-share limit (23 s)

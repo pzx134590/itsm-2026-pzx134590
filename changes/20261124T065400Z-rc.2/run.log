@@ -1,0 +1,71 @@
+06:54:01 candidate itsmlab.local/lab6-candidate:3a65f760ab70, stable ghcr.io/swasik/svcdesk-v2-seeded:2.0.0, strategy canary
+06:54:01 config: SLO window 28d; availability 0.99 (max burn 20); latency 0.95 under 0.1s (max burn 4); min_requests 150; interval 5s; timeout 160s; steps 10 50 % for 45 20 s
+06:54:01 shadow: nginx, at least 200 ingress searches and completed candidate observations before weighted traffic; hangs use the progress watchdog
+06:54:01 Prometheus http://prometheus:9090; Caddy admin http://edge:2019
+06:54:01 weights now 100 0 0
+06:54:01 action [closed-loop] set weights 100/0/0 before candidate startup
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Recreate 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Recreated 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Starting 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Started 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Waiting 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Healthy 
+06:54:02 svcdesk-canary runs itsmlab.local/lab6-candidate:3a65f760ab70
+06:54:02 action [closed-loop] start svcdesk-canary with the candidate at weight 0
+06:54:02 weights now 0 0 100
+06:54:02 action [closed-loop] enable nginx shadow at weights 0/0/100; users continue to receive stable responses
+06:54:02 shadow phase: nginx mirrors candidate searches; requiring 200 stable ingress searches and completed candidate observations before user canary
+06:54:03 action [read-only] read candidate shadow counters from Prometheus
+06:54:03 shadow: stable ingress=0/200 candidate completed=0/200 5xx=0 slow=0; users remain on stable
+06:54:08 action [read-only] read candidate shadow counters from Prometheus
+06:54:08 shadow: stable ingress=201/200 candidate completed=0/200 5xx=0 slow=0; users remain on stable
+06:54:14 action [read-only] read candidate shadow counters from Prometheus
+06:54:14 shadow: stable ingress=400/200 candidate completed=178/200 5xx=0 slow=4; users remain on stable
+06:54:19 action [read-only] read candidate shadow counters from Prometheus
+06:54:19 shadow: stable ingress=600/200 candidate completed=376/200 5xx=1 slow=11; users remain on stable
+06:54:22 shadow result: 578 completed searches, availability bad share 0.001730103806 (limit 0.2), latency bad share 0.02941176471 (limit 0.2)
+06:54:22 weights now 100 0 0
+06:54:22 action [closed-loop] disable nginx shadow after 578 candidate searches passed
+06:54:22 shadow gate passed; starting the weighted canary with users still routed to stable
+06:54:22 weights now 90 10 0
+06:54:22 action [closed-loop] set weights 90/10/0 for step 1
+06:54:22 step 1: weight 10%, minimum 45s and 150 requests
+06:54:23 action [read-only] read canary counters at weight 10%
+06:54:23 step 1 weight 10%: requests=0 5xx=0 (0, limit 0.2) slow=0 (0, limit 0.2), target_up=1
+06:54:28 action [read-only] read canary counters at weight 10%
+06:54:28 step 1 weight 10%: requests=200 5xx=0 (0, limit 0.2) slow=12 (0.06, limit 0.2), target_up=1
+06:54:33 action [read-only] read canary counters at weight 10%
+06:54:33 step 1 weight 10%: requests=220 5xx=0 (0, limit 0.2) slow=12 (0.05454545455, limit 0.2), target_up=1
+06:54:38 action [read-only] read canary counters at weight 10%
+06:54:38 step 1 weight 10%: requests=240 5xx=0 (0, limit 0.2) slow=12 (0.05, limit 0.2), target_up=1
+06:54:43 action [read-only] read canary counters at weight 10%
+06:54:43 step 1 weight 10%: requests=260 5xx=0 (0, limit 0.2) slow=13 (0.05, limit 0.2), target_up=1
+06:54:49 action [read-only] read canary counters at weight 10%
+06:54:49 step 1 weight 10%: requests=280 5xx=0 (0, limit 0.2) slow=14 (0.05, limit 0.2), target_up=1
+06:54:54 action [read-only] read canary counters at weight 10%
+06:54:54 step 1 weight 10%: requests=300 5xx=0 (0, limit 0.2) slow=14 (0.04666666667, limit 0.2), target_up=1
+06:55:00 action [read-only] read canary counters at weight 10%
+06:55:00 step 1 weight 10%: requests=320 5xx=0 (0, limit 0.2) slow=15 (0.046875, limit 0.2), target_up=1
+06:55:05 action [read-only] read canary counters at weight 10%
+06:55:05 step 1 weight 10%: requests=360 5xx=0 (0, limit 0.2) slow=16 (0.04444444444, limit 0.2), target_up=1
+06:55:10 action [read-only] read canary counters at weight 10%
+06:55:10 step 1 weight 10%: requests=380 5xx=0 (0, limit 0.2) slow=16 (0.04210526316, limit 0.2), target_up=1
+06:55:10 step 1 passed with 380 canary searches
+06:55:11 weights now 50 50 0
+06:55:11 action [closed-loop] set weights 50/50/0 for step 2
+06:55:11 step 2: weight 50%, minimum 20s and 150 requests
+06:55:11 action [read-only] read canary counters at weight 50%
+06:55:11 step 2 weight 50%: requests=0 5xx=0 (0, limit 0.2) slow=0 (0, limit 0.2), target_up=1
+06:55:16 action [read-only] read canary counters at weight 50%
+06:55:16 step 2 weight 50%: requests=22 5xx=0 (0, limit 0.2) slow=2 (0.09090909091, limit 0.2), target_up=1
+06:55:22 action [read-only] read canary counters at weight 50%
+06:55:22 step 2 weight 50%: requests=122 5xx=0 (0, limit 0.2) slow=4 (0.03278688525, limit 0.2), target_up=1
+06:55:27 action [read-only] read canary counters at weight 50%
+06:55:27 step 2 weight 50%: requests=223 5xx=0 (0, limit 0.2) slow=5 (0.02242152466, limit 0.2), target_up=1
+06:55:32 action [read-only] read canary counters at weight 50%
+06:55:32 step 2 weight 50%: requests=323 5xx=1 (0.003095975232, limit 0.2) slow=7 (0.02167182663, limit 0.2), target_up=1
+06:55:32 step 2 passed with 323 canary searches
+06:55:32 weights now 0 100 0
+06:55:32 action [closed-loop] set weights 0/100/0 to promote the candidate
+06:55:32 record: /tmp/itsmlab6-vz_wd6yx/run-1-rc.2/record/CHANGE.md
+06:55:32 outcome: promoted - all configured canary steps passed their SLO-derived gates (92 s)

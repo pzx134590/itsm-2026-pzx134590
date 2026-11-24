@@ -1,0 +1,32 @@
+06:28:20 candidate itsmlab.local/lab6-candidate:4699f7500d0e, stable ghcr.io/swasik/svcdesk-v2-seeded:2.0.0, strategy canary
+06:28:20 config: SLO window 28d; availability 0.99 (max burn 20); latency 0.95 under 0.1s (max burn 4); min_requests 150; interval 5s; timeout 160s; steps 10 50 % for 45 20 s
+06:28:20 shadow: nginx, at least 200 ingress searches and completed candidate observations before weighted traffic; hangs use the progress watchdog
+06:28:20 Prometheus http://prometheus:9090; Caddy admin http://edge:2019
+06:28:20 weights now 100 0 0
+06:28:20 action [closed-loop] set weights 100/0/0 before candidate startup
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Recreate 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Recreated 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Starting 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Started 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Waiting 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Healthy 
+06:28:22 svcdesk-canary runs itsmlab.local/lab6-candidate:4699f7500d0e
+06:28:22 action [closed-loop] start svcdesk-canary with the candidate at weight 0
+06:28:22 weights now 0 0 100
+06:28:22 action [closed-loop] enable nginx shadow at weights 0/0/100; users continue to receive stable responses
+06:28:22 shadow phase: nginx mirrors candidate searches; requiring 200 stable ingress searches and completed candidate observations before user canary
+06:28:23 action [read-only] read candidate shadow counters from Prometheus
+06:28:23 shadow: stable ingress=0/200 candidate completed=0/200 5xx=0 slow=0; users remain on stable
+06:28:28 action [read-only] read candidate shadow counters from Prometheus
+06:28:28 shadow: stable ingress=200/200 candidate completed=25/200 5xx=0 slow=0; users remain on stable
+06:28:33 action [read-only] read candidate shadow counters from Prometheus
+06:28:33 shadow: stable ingress=401/200 candidate completed=40/200 5xx=0 slow=1; users remain on stable
+06:28:39 action [read-only] read candidate shadow counters from Prometheus
+06:28:39 shadow: stable ingress=600/200 candidate completed=40/200 5xx=0 slow=1; users remain on stable
+06:28:44 action [read-only] read candidate shadow counters from Prometheus
+06:28:44 shadow: stable ingress=1000/200 candidate completed=40/200 5xx=0 slow=1; users remain on stable
+06:28:44 gate decision: roll back - shadow candidate stopped completing searches: 40 completed observations after at least 1000 stable searches passed through nginx; treating absent observations as a hang
+06:28:44 weights now 100 0 0
+06:28:44 action [closed-loop] set weights 100/0/0 to roll back: shadow candidate stopped completing searches: 40 completed observations after at least 1000 stable searches passed through nginx; treating absent observations as a hang
+06:28:44 record: /tmp/itsmlab6-sw81kevx/run-1-rc.1/record/CHANGE.md
+06:28:44 outcome: rolled-back - shadow candidate stopped completing searches: 40 completed observations after at least 1000 stable searches passed through nginx; treating absent observations as a hang (25 s)

@@ -1,0 +1,378 @@
+{
+  "schema": 1,
+  "strategy": "canary",
+  "slot": 1,
+  "candidate": "itsmlab.local/lab6-candidate:1bf3eb84c7e0",
+  "seed": "practice",
+  "t_traffic_start": 1795510276.032,
+  "t_deploy_start": 1795510306.055,
+  "t_deploy_end": 1795510329.958,
+  "t_bake_end": 1795510344.96,
+  "exit": 3,
+  "killed": false,
+  "stack": {
+    "up": true,
+    "seconds": 4.0,
+    "error": null
+  },
+  "prometheus": {
+    "queries_before": 0.0,
+    "queries_after": 30.0,
+    "tracks": {
+      "stable": 1606.5,
+      "canary": 0.0
+    },
+    "up": {
+      "stable": 1,
+      "canary": 1
+    },
+    "targets": {
+      "stable": 1,
+      "canary": 1
+    },
+    "interval": {
+      "stable": "5s",
+      "canary": "5s"
+    },
+    "ladder": [
+      "+Inf",
+      "0.005",
+      "0.01",
+      "0.025",
+      "0.05",
+      "0.075",
+      "0.1",
+      "0.16",
+      "0.17",
+      "0.18",
+      "0.19",
+      "0.2",
+      "0.21",
+      "0.25",
+      "0.5",
+      "1.0",
+      "10.0",
+      "2.5",
+      "5.0"
+    ],
+    "shadow": {
+      "canary_requests": 40.0,
+      "until": 1795510344.96
+    }
+  },
+  "kb_index": {
+    "before": 0,
+    "after": 2797
+  },
+  "record": "CHANGE.md",
+  "behaviour": "hang",
+  "evaluation": {
+    "strategy": "canary",
+    "slot": 1,
+    "candidate_version": "2.1.0-rc.1",
+    "exit": 3,
+    "killed": false,
+    "requests": 2758,
+    "stopped": 0,
+    "warmup": {
+      "requests": 1201,
+      "answered": 1201,
+      "stable": 1201,
+      "stable_200": 1200,
+      "stable_5xx": 1,
+      "timeouts": 0,
+      "transport": 0,
+      "stable_fingerprint": "38bc611e"
+    },
+    "blast_radius": {
+      "total": 1,
+      "headerless": 1,
+      "candidate_5xx": 0,
+      "floor": 0,
+      "candidate_answers": 0,
+      "stable_5xx_share": 0.002539
+    },
+    "candidate": {
+      "answers": 0,
+      "first_answer": null,
+      "feature_off": 0
+    },
+    "end": {
+      "state": "rolled-back",
+      "requests": 520,
+      "answered": 520,
+      "candidate": 0,
+      "stable": 520,
+      "on": 0,
+      "off": 0,
+      "failures": 4
+    },
+    "end_state": "rolled-back",
+    "outcome": "rolled-back",
+    "timeline": [
+      {
+        "start": -35.0,
+        "phase": "warm-up",
+        "requests": 1,
+        "answered": 1,
+        "stable": 1,
+        "candidate": 0,
+        "other": 0,
+        "share": 0.0,
+        "failures": {
+          "5xx": 0,
+          "timeout": 0,
+          "transport": 0,
+          "headerless": 0
+        }
+      },
+      {
+        "start": -30.0,
+        "phase": "warm-up",
+        "requests": 200,
+        "answered": 200,
+        "stable": 200,
+        "candidate": 0,
+        "other": 0,
+        "share": 0.0,
+        "failures": {
+          "5xx": 0,
+          "timeout": 0,
+          "transport": 0,
+          "headerless": 0
+        }
+      },
+      {
+        "start": -25.0,
+        "phase": "warm-up",
+        "requests": 200,
+        "answered": 200,
+        "stable": 200,
+        "candidate": 0,
+        "other": 0,
+        "share": 0.0,
+        "failures": {
+          "5xx": 0,
+          "timeout": 0,
+          "transport": 0,
+          "headerless": 0
+        }
+      },
+      {
+        "start": -20.0,
+        "phase": "warm-up",
+        "requests": 200,
+        "answered": 200,
+        "stable": 200,
+        "candidate": 0,
+        "other": 0,
+        "share": 0.0,
+        "failures": {
+          "5xx": 0,
+          "timeout": 0,
+          "transport": 0,
+          "headerless": 0
+        }
+      },
+      {
+        "start": -15.0,
+        "phase": "warm-up",
+        "requests": 200,
+        "answered": 200,
+        "stable": 200,
+        "candidate": 0,
+        "other": 0,
+        "share": 0.0,
+        "failures": {
+          "5xx": 1,
+          "timeout": 0,
+          "transport": 0,
+          "headerless": 0
+        }
+      },
+      {
+        "start": -10.0,
+        "phase": "warm-up",
+        "requests": 200,
+        "answered": 200,
+        "stable": 200,
+        "candidate": 0,
+        "other": 0,
+        "share": 0.0,
+        "failures": {
+          "5xx": 0,
+          "timeout": 0,
+          "transport": 0,
+          "headerless": 0
+        }
+      },
+      {
+        "start": -5.0,
+        "phase": "warm-up",
+        "requests": 200,
+        "answered": 200,
+        "stable": 200,
+        "candidate": 0,
+        "other": 0,
+        "share": 0.0,
+        "failures": {
+          "5xx": 0,
+          "timeout": 0,
+          "transport": 0,
+          "headerless": 0
+        }
+      },
+      {
+        "start": 0.0,
+        "phase": "script",
+        "requests": 200,
+        "answered": 200,
+        "stable": 200,
+        "candidate": 0,
+        "other": 0,
+        "share": 0.0,
+        "failures": {
+          "5xx": 1,
+          "timeout": 0,
+          "transport": 0,
+          "headerless": 0
+        }
+      },
+      {
+        "start": 5.0,
+        "phase": "script",
+        "requests": 200,
+        "answered": 200,
+        "stable": 200,
+        "candidate": 0,
+        "other": 0,
+        "share": 0.0,
+        "failures": {
+          "5xx": 0,
+          "timeout": 0,
+          "transport": 0,
+          "headerless": 0
+        }
+      },
+      {
+        "start": 10.0,
+        "phase": "script",
+        "requests": 200,
+        "answered": 200,
+        "stable": 200,
+        "candidate": 0,
+        "other": 0,
+        "share": 0.0,
+        "failures": {
+          "5xx": 0,
+          "timeout": 0,
+          "transport": 0,
+          "headerless": 0
+        }
+      },
+      {
+        "start": 15.0,
+        "phase": "script",
+        "requests": 200,
+        "answered": 200,
+        "stable": 200,
+        "candidate": 0,
+        "other": 0,
+        "share": 0.0,
+        "failures": {
+          "5xx": 1,
+          "timeout": 0,
+          "transport": 0,
+          "headerless": 0
+        }
+      },
+      {
+        "start": 20.0,
+        "phase": "script",
+        "requests": 200,
+        "answered": 199,
+        "stable": 199,
+        "candidate": 0,
+        "other": 0,
+        "share": 0.0,
+        "failures": {
+          "5xx": 0,
+          "timeout": 0,
+          "transport": 1,
+          "headerless": 1
+        }
+      },
+      {
+        "start": 25.0,
+        "phase": "bake",
+        "requests": 200,
+        "answered": 200,
+        "stable": 200,
+        "candidate": 0,
+        "other": 0,
+        "share": 0.0,
+        "failures": {
+          "5xx": 2,
+          "timeout": 0,
+          "transport": 0,
+          "headerless": 0
+        }
+      },
+      {
+        "start": 30.0,
+        "phase": "bake",
+        "requests": 200,
+        "answered": 200,
+        "stable": 200,
+        "candidate": 0,
+        "other": 0,
+        "share": 0.0,
+        "failures": {
+          "5xx": 1,
+          "timeout": 0,
+          "transport": 0,
+          "headerless": 0
+        }
+      },
+      {
+        "start": 35.0,
+        "phase": "bake",
+        "requests": 157,
+        "answered": 157,
+        "stable": 157,
+        "candidate": 0,
+        "other": 0,
+        "share": 0.0,
+        "failures": {
+          "5xx": 1,
+          "timeout": 0,
+          "transport": 0,
+          "headerless": 0
+        }
+      }
+    ],
+    "canary": {
+      "ok": false,
+      "streak": 0,
+      "first_full": null
+    },
+    "fingerprints": {},
+    "fingerprint_ok": true,
+    "kb_ok": true,
+    "kb": {
+      "delta": 2797.0,
+      "answers_200": 2750,
+      "needed": 2695
+    },
+    "queries": 30.0,
+    "queries_ok": true,
+    "tracks_ok": false,
+    "tracks": {
+      "stable": 1606.5,
+      "canary": 0.0,
+      "answers": 1556,
+      "needed": 1401
+    },
+    "targets_ok": true
+  }
+}
