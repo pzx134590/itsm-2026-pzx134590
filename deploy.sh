@@ -301,6 +301,9 @@ prom_query() {
 CHANGE_TYPE=standard
 RISK=low
 ROLLBACK_PLAN="Restore Caddy weights to 100/0/0 through its admin API; stable stays running."
+if [[ $RELEASE_STRATEGY == flag ]]; then
+  ROLLBACK_PLAN="Disable the feature flag, then restore Caddy weights to 100/0/0; stable stays running."
+fi
 
 STABLE_IMAGE=$(jq -r '.services["svcdesk-stable"].image // empty' <<<"$STACK_JSON")
 [[ -n $STABLE_IMAGE ]] || die "the stack has no service svcdesk-stable (R-01)"

@@ -1,0 +1,47 @@
+10:21:39 candidate itsmlab.local/lab6-candidate:59dff1a6c3ed, stable ghcr.io/swasik/svcdesk-v2-seeded:2.0.0, strategy flag
+10:21:39 config: SLO window 28d; availability 0.99 (max burn 20); latency 0.95 under 0.1s (max burn 4); min_requests 150; interval 5s; timeout 160s; steps 10 50 % for 45 20 s
+10:21:39 shadow: nginx, at least 200 ingress searches and completed candidate observations before weighted traffic; hangs use the progress watchdog
+10:21:39 Prometheus http://prometheus:9090; Caddy admin http://edge:2019
+10:21:39 weights now 100 0 0
+10:21:39 action [closed-loop] set weights 100/0/0 before candidate startup
+ itsmlab6-0c9a453f-flagd-1 Copying /tmp/tmp.rNjMWV8DZo to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+ itsmlab6-0c9a453f-flagd-1 Copied /tmp/tmp.rNjMWV8DZo to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+10:21:41 flag svcdesk-2-1 set to 0%
+10:21:41 action [closed-loop] set feature flag to 0 percent before candidate startup
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Recreate 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Recreated 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Starting 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Started 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Waiting 
+ Container itsmlab6-0c9a453f-svcdesk-canary-1 Healthy 
+10:21:43 svcdesk-canary runs itsmlab.local/lab6-candidate:59dff1a6c3ed
+10:21:43 action [closed-loop] start svcdesk-canary with the candidate at weight 0
+10:21:43 weights now 0 100 0
+10:21:43 action [closed-loop] route traffic to candidate with feature flag disabled
+ itsmlab6-0c9a453f-flagd-1 Copying /tmp/tmp.UlRwMSLCyH to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+ itsmlab6-0c9a453f-flagd-1 Copied /tmp/tmp.UlRwMSLCyH to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+10:21:45 flag svcdesk-2-1 set to 10%
+10:21:45 action [closed-loop] set feature flag to 10 percent
+10:21:45 step 1: weight 10%, minimum 45s and 150 requests
+10:21:45 action [read-only] read canary counters at weight 10%
+10:21:45 step 1 weight 10%: requests=0 5xx=0 (0, limit 0.2) slow=0 (0, limit 0.2), target_up=1
+10:21:50 action [read-only] read canary counters at weight 10%
+10:21:50 step 1 weight 10%: requests=11 5xx=0 (0, limit 0.2) slow=0 (0, limit 0.2), target_up=1
+10:21:56 action [read-only] read canary counters at weight 10%
+10:21:56 step 1 weight 10%: requests=32 5xx=0 (0, limit 0.2) slow=1 (0.03125, limit 0.2), target_up=1
+10:22:01 action [read-only] read canary counters at weight 10%
+10:22:01 step 1 weight 10%: requests=40 5xx=0 (0, limit 0.2) slow=1 (0.025, limit 0.2), target_up=1
+10:22:06 action [read-only] read canary counters at weight 10%
+10:22:06 step 1 weight 10%: requests=40 5xx=0 (0, limit 0.2) slow=1 (0.025, limit 0.2), target_up=1
+10:22:11 action [read-only] read canary counters at weight 10%
+10:22:11 step 1 weight 10%: requests=40 5xx=0 (0, limit 0.2) slow=1 (0.025, limit 0.2), target_up=1
+10:22:11 gate decision: roll back - canary produced no completed search for 10s at weight 10%; treating absent observations as a hang
+ itsmlab6-0c9a453f-flagd-1 Copying /tmp/tmp.Gm88OmEt79 to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+ itsmlab6-0c9a453f-flagd-1 Copied /tmp/tmp.Gm88OmEt79 to itsmlab6-0c9a453f-flagd-1:/etc/flagd/flags.json
+10:22:13 flag svcdesk-2-1 set to 0%
+10:22:13 action [closed-loop] set feature flag to 0 percent to roll back
+10:22:13 weights now 100 0 0
+10:22:13 action [closed-loop] release automation owns rollback and set weights 100/0/0: canary produced no completed search for 10s at weight 10%; treating absent observations as a hang
+10:22:13 action [read-only] recovery evidence: stable health endpoint answered successfully after rollback
+10:22:13 record: /tmp/itsmlab6-dn1bwxi9/run-1-rc.1/record/CHANGE.md
+10:22:13 outcome: rolled-back - canary produced no completed search for 10s at weight 10%; treating absent observations as a hang (34 s)
